@@ -14,22 +14,35 @@ $.sap.require('DHBW.script.ics');
 $.sap.require('DHBW.script.fullcalendar');
 $.sap.require('DHBW.script.html2canvas');
 
+
+// Formatiert Datum für SAP entsprechend. Gibt ein Objektiv passend für Schnittstelle zurück
+// 
+// Parameter:
+// @start - Startdatum (Date)
+// @end - Enddatum (Date)
+// @table_item_4_text - Termindatum (Date)
+//
 function getFormattedDateObject (start, end, table_item_4_text) {
+    //Startdatum "bauen", zuerst im "SAP"-Format
     var zeit = "PT"+("00"+start.getHours()).slice(-2)+"H"+("00"+start.getMinutes()).slice(-2)+"M"+("00"+start.getSeconds()).slice(-2)+"S";
+    //Jetzt aus GMT, welcher jedoch modifiziert werden muss
     var start_of_start_day = new Date(start.getTime());
     start_of_start_day.setHours(0,0,0,0);
     var tag = start_of_start_day.toISOString().substring(0, start_of_start_day.toISOString().length-5);
 
-
+    //Enddatum
     var zeit2 = "PT"+("00"+end.getHours()).slice(-2)+"H"+("00"+end.getMinutes()).slice(-2)+"M"+("00"+end.getSeconds()).slice(-2)+"S";
+    //Jetzt aus GMT, welcher jedoch modifiziert werden muss
     var start_of_end_day = new Date(end.getTime());
     start_of_end_day.setHours(0,0,0,0);
     var tag2 = start_of_end_day.toISOString().substring(0, start_of_end_day.toISOString().length-5);
 
+    //Drittes Datum für SAP (Erforderlich von Schnittstelle)
     var t_item_4 = new Date(table_item_4_text);
     t_item_4.setHours(0,0,0,0);
     var tag3 = t_item_4.toISOString().substring(0, t_item_4.toISOString().length-5);
 
+    //Rückgabeobjekt, passend für SAP
     return {
         Termin: tag3,
         Sdate: tag,
@@ -39,6 +52,13 @@ function getFormattedDateObject (start, end, table_item_4_text) {
     }
 }
 
+// Holt das Token für Anfragen (Schreiben) auf 
+// 
+// Parameter:
+// @start - Startdatum (Date)
+// @end - Enddatum (Date)
+// @table_item_4_text - Termindatum (Date)
+//
 function getSAPToken (o) {
     var o = (o||{});
     var successful = (o.successful||function(token){});
