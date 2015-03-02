@@ -55,15 +55,15 @@ function getFormattedDateObject (start, end, table_item_4_text) {
 // Holt das Token für Anfragen (Schreiben) auf 
 // 
 // Parameter:
-// @start - Startdatum (Date)
-// @end - Enddatum (Date)
-// @table_item_4_text - Termindatum (Date)
+// @o = Objekt für Parameter
 //
 function getSAPToken (o) {
+    //Callbacks definieren
     var o = (o||{});
     var successful = (o.successful||function(token){});
     var failure = (o.failure||function(data){});
 
+    //Token via GET holen
     $.ajax({
         type: 'GET',
         url: "/sap/opu/odata/SAP/Z_WP_SRV",
@@ -73,7 +73,15 @@ function getSAPToken (o) {
             "DataServiceVersion": "2.0",
             "X-CSRF-Token":"Fetch"
         }
-    }).fail(function(data){ failure(data); }).done(function(data, status, headers) { var token = headers.getResponseHeader('X-CSRF-Token'); successful(token); });
+    
+    }).fail(function (data) {
+        //Beim Fehler geht es leer zurück
+        failure(data);
+    }).done(function (data, status, headers) {
+        //Im Erfolgsfall Token extrahieren und zurückgeben
+        var token = headers.getResponseHeader('X-CSRF-Token');
+        successful(token);
+    });
 }
 
 function putAuftragsSet (o) {
