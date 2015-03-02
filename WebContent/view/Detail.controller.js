@@ -15,20 +15,23 @@ $.sap.require('DHBW.script.fullcalendar');
 $.sap.require('DHBW.script.html2canvas');
 
 function getFormattedDateObject (start, end, table_item_4_text) {
-    var zeit = "PT"+("00"+start.getHours()).slice(-2)+"H"+("00"+start.getMinutes()).slice(-2)+"M"+("00"+start.getSeconds()).slice(-2)+"S";
+    var zeit = "PT"+("00"+(start.getHours()-2)).slice(-2)+"H"+("00"+start.getMinutes()).slice(-2)+"M"+("00"+start.getSeconds()).slice(-2)+"S";
     var start_of_start_day = new Date(start.getTime());
     start_of_start_day.setHours(0,0,0,0);
+    start_of_start_day.setDate(start_of_start_day.getDate()+1);
     var tag = start_of_start_day.toISOString().substring(0, start_of_start_day.toISOString().length-5);
 
 
-    var zeit2 = "PT"+("00"+end.getHours()).slice(-2)+"H"+("00"+end.getMinutes()).slice(-2)+"M"+("00"+end.getSeconds()).slice(-2)+"S";
+    var zeit2 = "PT"+("00"+(end.getHours()-2)).slice(-2)+"H"+("00"+end.getMinutes()).slice(-2)+"M"+("00"+end.getSeconds()).slice(-2)+"S";
     var start_of_end_day = new Date(end.getTime());
     start_of_end_day.setHours(0,0,0,0);
+    start_of_end_day.setDate(start_of_end_day.getDate()+1);
     var tag2 = start_of_end_day.toISOString().substring(0, start_of_end_day.toISOString().length-5);
 
     if (typeof table_item_4_text != 'undefined') {
         var t_item_4 = new Date(table_item_4_text);
         t_item_4.setHours(0,0,0,0);
+        t_item_4.setDate(t_item_4.getDate()+1);
         var tag3 = t_item_4.toISOString().substring(0, t_item_4.toISOString().length-5);
     }
 
@@ -132,11 +135,12 @@ sap.ui.controller("DHBW.view.Detail", {
 
                 window.id = oEvent.getParameters().arguments.contextPath;
                 window.view = this.getView();
+                window.filter = false;
 
                 $('#calendar').fullCalendar('removeEvents');
                 this.name = "";
                 that = this;
-
+                this.perwechsel();
             }
 
         }, this);
@@ -145,13 +149,54 @@ sap.ui.controller("DHBW.view.Detail", {
         table.attachUpdateFinished(function () {
 
 
+//Pernr als Filter nehmen
+            if (window.filter == false){
+                //var list = this.getView().byId("idTable");
+                var binding = this.getBinding("items");
 
+                binding.filter([ new sap.ui.model.Filter("Perno",
+                    sap.ui.model.FilterOperator.EQ, window.id) ]);
+                window.filter = true;
+            }
 
             //Sind im context der Tabelle
             var items = this.getItems();
+            var events = $('#calendar').fullCalendar( 'clientEvents');
             var da = false;
             for (var index = 0; index < items.length; index++) {
 
+                if(this.getItems()[index].getCells()[8].getText() != ""){
+                    for(var z = 0; z < events.length; z++){
+                        if(events[z].title == this.getItems()[index].getCells()[0].getText()){
+                            da = true;
+                        }
+                    }
+
+                    if(da != true){
+                        this.getItems()[index].setVisible(false);
+                        var start = new Date(this.getItems()[index].getCells()[8].getText());
+                        var end = new Date(this.getItems()[index].getCells()[9].getText());
+                        var suzeit = new Date(this.getItems()[index].getCells()[10].getText());
+                        var euzeit = new Date(this.getItems()[index].getCells()[11].getText());
+
+                        start.setMinutes(suzeit.getMinutes());
+                        start.setHours(suzeit.getHours());
+
+                        end.setMinutes(euzeit.getMinutes());
+                        end.setHours(euzeit.getHours());
+
+
+                        var eventData = {
+                            title: this.getItems()[index].getCells()[0].getText(),
+                            start: start,
+                            end: end,
+                            color: "green"
+                        };
+
+                        $('#calendar').fullCalendar('renderEvent', eventData, true);
+                        da = false;
+                    }
+                }
 
                 var element = items[index];
                 (function (element) {
@@ -186,6 +231,9 @@ sap.ui.controller("DHBW.view.Detail", {
         });
     },
 
+    perwechsel:function(){
+        var tab = this.getView().byId("idTable");
+    },
 
     onAfterRendering: function () {
         //Kalender
@@ -229,6 +277,32 @@ sap.ui.controller("DHBW.view.Detail", {
                 },
                 eventClick: function (event, jsEvent, view) {
                     //Hier Events löschen
+                    sap.m.MessageBox.show("Wollen Sie die Einplanung des Auftrags wirklich löschen?",
+                        sap.m.MessageBox.Icon.WARNING, "Achtung",
+                        [ sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO  ], $.proxy(
+                            function(sAction) {
+                                if ("YES" === sAction) {
+
+
+                                    var id= event._id;
+                                    model = window.view.getModel();
+                                    model.remove(  "/AuftragSet('" + event.title +"')", "", function(e,f){
+                                            console.log("Erfolg");
+                                        },function(e,f){
+                                            console.log("Fail");
+                                        }
+                                    );
+                                    var tab = window.view.byId("idTable");
+                                    var items = tab.getItems();
+
+                                    for(var index = 0; index < items.length; index++){
+                                        if (tab.getItems()[index].getCells()[0].getText() == id){
+                                            tab.getItems()[index].getCells()[0].setVisible(true);
+                                        }
+                                    }
+                                    $('#calendar').fullCalendar('removeEvents', id);
+                                }
+                            }, this));
                 },
                 businessHours: {
                     start: '10:00', // a start time (10am in this example)
