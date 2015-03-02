@@ -18,17 +18,17 @@ function getFormattedDateObject (start, end, table_item_4_text) {
     var zeit = "PT"+("00"+start.getHours()).slice(-2)+"H"+("00"+start.getMinutes()).slice(-2)+"M"+("00"+start.getSeconds()).slice(-2)+"S";
     var start_of_start_day = new Date(start.getTime());
     start_of_start_day.setHours(0,0,0,0);
-    var tag = start_of_start_day.toISOString();
+    var tag = start_of_start_day.toISOString().substring(0, start_of_start_day.toISOString().length-5);
 
 
     var zeit2 = "PT"+("00"+end.getHours()).slice(-2)+"H"+("00"+end.getMinutes()).slice(-2)+"M"+("00"+end.getSeconds()).slice(-2)+"S";
     var start_of_end_day = new Date(end.getTime());
     start_of_end_day.setHours(0,0,0,0);
-    var tag2 = start_of_end_day.toISOString();
+    var tag2 = start_of_end_day.toISOString().substring(0, start_of_end_day.toISOString().length-5);
 
     var t_item_4 = new Date(table_item_4_text);
     t_item_4.setHours(0,0,0,0);
-    var tag3 = t_item_4.toISOString();
+    var tag3 = t_item_4.toISOString().substring(0, t_item_4.toISOString().length-5);
 
     return {
         Termin: tag3,
@@ -39,6 +39,68 @@ function getFormattedDateObject (start, end, table_item_4_text) {
     }
 }
 
+function getSAPToken (o) {
+    var o = (o||{});
+    var successful = (o.successful||function(token){});
+    var failure = (o.failure||function(data){});
+
+    $.ajax({
+        type: 'GET',
+        url: "/sap/opu/odata/SAP/Z_WP_SRV",
+        headers: {
+            "X-Requested-With": "XMLHttpRequest",
+            "Content-Type": "application/atom+xml",
+            "DataServiceVersion": "2.0",
+            "X-CSRF-Token":"Fetch"
+        }
+    }).fail(function(data){ failure(data); }).done(function(data, status, headers) { var token = headers.getResponseHeader('X-CSRF-Token'); successful(token); });
+}
+
+function putAuftragsSet (o) {
+    // Callbacks definieren
+    var o = (o||{});
+    var successful = (o.successful||function(token){});
+    var failure = (o.failure||function(data){});
+
+    // Überprüfen, ob die notwendigen Variablen deklariert sind
+    if (typeof o.data == 'undefined' || typeof  o.token == 'undefined') {
+        failure();
+        return;
+    }
+
+    var token = o.token;
+    var data = o.data;
+
+    var record = '<atom:entry xmlns:atom="http://www.w3.org/2005/Atom">'+
+        '<atom:id>tag:com.sap,2010-06-24:/subscriptions/123</atom:id>'+
+        '<atom:title>Create new user</atom:title><atom:author/>'+
+        '<atom:updated/>'+
+        '<atom:content type="application/xml">'+
+        '<m:properties xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices">'+
+        '<d:Aufnr m:type="Edm.String">' + data.Aufnr + '</d:Aufnr>'+
+        '<d:Pernr m:type="Edm.String">' + data.Pernr + '</d:Pernr>'+
+        '<d:Sdate m:type="Edm.DateTime">' + data.Sdate + '</d:Sdate>'+
+        '<d:Edate m:type="Edm.DateTime">' + data.Edate + '</d:Edate>'+
+        '<d:Euzeit m:type="Edm.Time">' + data.Euzeit + '</d:Euzeit>'+
+        '<d:Suzeit m:type="Edm.Time">' + data.Suzeit + '</d:Suzeit>'+
+        '</m:properties>'+
+        '</atom:content>'+
+        '</atom:entry>';
+
+    $.ajax({
+        type: 'PUT',
+        url: "/sap/opu/odata/SAP/Z_WP_SRV/AuftragSet('"+data.Aufnr+"')",
+        headers: {
+            "X-CSRF-Token": token,
+            "Content-Type": "application/atom+xml"
+        },
+        data: record
+    }).done(function(d){
+        successful(d);
+    }).fail(function(d){
+        failure(d);
+    });
+}
 
 sap.ui.controller("DHBW.view.Detail", {
 
@@ -180,6 +242,8 @@ sap.ui.controller("DHBW.view.Detail", {
                 },
                 eventResize: function (event) {
                     //Events größer / kleiner ziehen
+                    console.log ("Event resize");
+
                 },
                 drop: function (e, f) {
                     //drop von Listenelementen
@@ -223,7 +287,7 @@ sap.ui.controller("DHBW.view.Detail", {
 
                     var dateObject = getFormattedDateObject(start,end,tableline.item(4).innerText);
 
-                    window.data ={
+                    var sap_data ={
                         Aufnr: tableline.item(0).innerText,
                         Dauer: tableline.item(7).innerText,
                         Pernr: window.id,
@@ -234,13 +298,29 @@ sap.ui.controller("DHBW.view.Detail", {
 
                     };
 
-                    $.extend(window.data, dateObject);
+                    $.extend(sap_data, dateObject);
 
-                    console.log(window.data);
+                    console.log(sap_data);
 
                     $('#calendar').fullCalendar('renderEvent', eventData, true);
 
-
+                    getSAPToken({
+                        successful: function (token) {
+                            putAuftragsSet({
+                                sucessful: function() {
+                                    console.log("Success");
+                                },
+                                failure: function() {
+                                    console.log("Failure");
+                                },
+                                token: token,
+                                data: sap_data
+                            })
+                        },
+                        failure: function () {
+                            console.log("Failure 2");
+                        }
+                    });
 
                 },
 
