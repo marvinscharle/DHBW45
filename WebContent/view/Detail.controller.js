@@ -26,12 +26,14 @@ function getFormattedDateObject (start, end, table_item_4_text) {
     start_of_end_day.setHours(0,0,0,0);
     var tag2 = start_of_end_day.toISOString().substring(0, start_of_end_day.toISOString().length-5);
 
-    var t_item_4 = new Date(table_item_4_text);
-    t_item_4.setHours(0,0,0,0);
-    var tag3 = t_item_4.toISOString().substring(0, t_item_4.toISOString().length-5);
+    if (typeof table_item_4_text != 'undefined') {
+        var t_item_4 = new Date(table_item_4_text);
+        t_item_4.setHours(0,0,0,0);
+        var tag3 = t_item_4.toISOString().substring(0, t_item_4.toISOString().length-5);
+    }
 
     return {
-        Termin: tag3,
+        Termin: (tag3||null),
         Sdate: tag,
         Suzeit: zeit,
         Edate: tag2,
@@ -237,12 +239,70 @@ sap.ui.controller("DHBW.view.Detail", {
                     // (Monday-Thursday in this example)
                 },
                 eventDrop: function (event) {
-
                     //Drop von Events ins Backend schreiben
+
+                    var start = event.start.toDate();
+                    var end = event.end.toDate();
+
+                    var dateObject = getFormattedDateObject(start,end);
+
+                    var sap_data ={
+                        Aufnr: event.title,
+                        Pernr: window.id
+                    };
+
+                    $.extend(sap_data, dateObject);
+
+                    getSAPToken({
+                        successful: function (token) {
+                            putAuftragsSet({
+                                successful: function() {
+                                    console.log("Success");
+                                },
+                                failure: function() {
+                                    console.log("Failure");
+                                },
+                                token: token,
+                                data: sap_data
+                            })
+                        },
+                        failure: function () {
+                            console.log("Failure 2");
+                        }
+                    });
                 },
                 eventResize: function (event) {
                     //Events größer / kleiner ziehen
                     console.log ("Event resize");
+                    var start = event.start.toDate();
+                    var end = event.end.toDate();
+
+                    var dateObject = getFormattedDateObject(start,end);
+
+                    var sap_data ={
+                        Aufnr: event.title,
+                        Pernr: window.id
+                    };
+
+                    $.extend(sap_data, dateObject);
+
+                    getSAPToken({
+                        successful: function (token) {
+                            putAuftragsSet({
+                                successful: function() {
+                                    console.log("Success");
+                                },
+                                failure: function() {
+                                    console.log("Failure");
+                                },
+                                token: token,
+                                data: sap_data
+                            })
+                        },
+                        failure: function () {
+                            console.log("Failure 2");
+                        }
+                    });
 
                 },
                 drop: function (e, f) {
@@ -307,7 +367,7 @@ sap.ui.controller("DHBW.view.Detail", {
                     getSAPToken({
                         successful: function (token) {
                             putAuftragsSet({
-                                sucessful: function() {
+                                successful: function() {
                                     console.log("Success");
                                 },
                                 failure: function() {
