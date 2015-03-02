@@ -1,0 +1,43 @@
+<core:FragmentDefinition
+  xmlns="sap.m"
+  xmlns:core="sap.ui.core"
+  xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
+  <Dialog
+    title="Neues Zeitereignis"
+    class="sapUiPopupWithPadding" >
+    <content>
+      <HBox>
+      <Label text="Datum" width="10em" textAlign="Center" class="pop" />
+       <DateTimeInput
+      							type="Date"
+      							width="18em"
+      						
+     							  />
+     							  </HBox>
+     							  <HBox>
+     							   <Label text="Zeit" width="10em" textAlign="Center" class="pop" />
+					          <DateTimeInput id="neu_input"
+      							type="Time" width="18em"
+      							
+      						
+     							 />
+     							 </HBox>
+     							 <HBox>
+     							<Label text="Art" width="10em"
+     							textAlign="Center" class="pop"/> 
+					         <ComboBox  id="combo1" value="Kommen">
+					         
+					         <core:Item text="Kommen" />
+					         <core:Item text="Gehen" />
+					         </ComboBox>
+      </HBox>
+      
+    </content>
+    <beginButton>
+      <Button text="Speichern" app:dialogType="Std" icon="sap-icon://save" press="Neu" />
+    </beginButton>
+    <endButton>
+      <Button text="Abbrechen" app:dialogType="Std" icon="sap-icon://decline" press="onDialogCloseButton" />
+    </endButton>
+  </Dialog>
+</core:FragmentDefinition>

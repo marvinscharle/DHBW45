@@ -1,0 +1,112 @@
+<mvc:View controllerName="DHBW.view.Detail"
+	xmlns:core="sap.ui.core" xmlns="sap.m" xmlns:me="sap.me" xmlns:l="sap.ui.layout"
+	xmlns:f="sap.ui.layout.form" xmlns:mvc="sap.ui.core.mvc">
+	<Page title="Kalender" enableScrolling="false">
+		
+		<content>
+
+		    
+		<core:HTML content='&lt;div id=&quot;calendar&quot; &gt; &lt;/div&gt;'> 
+		
+
+      </core:HTML>
+      
+      <ScrollContainer
+    height="100%"
+    width="100%"
+    horizontal="true"
+    vertical="true"> 
+		
+			<Table id="idTable" inset="false" close="handleClose" select="handleSelect"
+				growing="false" growingScrollToLoad="true" mode="{device>/listMode}"
+				items="{/AuftragSet}" noDatattext="Keine Daten gefunden">
+
+				<items>
+					<ColumnListItem vAlign="Middle">
+						<cells>
+
+							
+								<Text text="{Aufnr}"/> 
+								<Text text="{Prio}"/>
+								<Text text="{Aart}"/> 
+								<Text text="{Ktext}"/>
+								<Text text="{
+					            path: 'Termin',
+					            formatter: 'DHBW.formatter.formatter.Termin'
+					          }"/> 
+								<Text text="{Status}"/>
+								<Text text="{Tplatz}"/>
+								<Text text="{Dauer}"/>
+								<Text text="{Sdate}"/>
+								<Text text="{Edate}"/>
+								<Text text="{
+					            path: 'Suzeit',
+					            formatter: 'DHBW.formatter.formatter.Zeit'
+					          }"/>
+								<Text text="{
+					            path: 'Euzeit',
+					            formatter: 'DHBW.formatter.formatter.Zeit'
+					          }"/>
+							
+						</cells>
+					</ColumnListItem>
+				</items>
+				<columns>
+
+					<Column>
+						<Label text="#" />
+					</Column>
+					<Column minScreenWidth="Tablet" demandPopin="true">
+						<Label text="Priorität" />
+					</Column>
+					<Column minScreenWidth="Tablet" demandPopin="true">
+						<Label text="Auftragsart" />
+					</Column>
+					<Column minScreenWidth="Tablet" demandPopin="true">
+						<Label text="Kurztext" />
+					</Column>
+					<Column minScreenWidth="Tablet" demandPopin="true">
+						<Label text="Termin" />
+					</Column>
+					<Column minScreenWidth="Tablet" demandPopin="true">
+						<Label text="Status" />
+					</Column>
+					<Column minScreenWidth="Tablet" demandPopin="true">
+						<Label text="Techn. Platz" />
+					</Column>
+					<Column minScreenWidth="Tablet" demandPopin="true">
+						<Label text="Dauer in h" />
+					</Column>
+					<Column minScreenWidth="Tablet" demandPopin="true" visible="false">
+						<Label text="Start Datum" />
+					</Column>
+					<Column minScreenWidth="Tablet" demandPopin="true" visible="false">
+						<Label text="End Datum" />
+					</Column>
+					<Column minScreenWidth="Tablet" demandPopin="true" visible="false">
+						<Label text="Startzeit" />
+					</Column>
+					<Column minScreenWidth="Tablet" demandPopin="true" visible="false">
+						<Label text="Endzeit" />
+					</Column>
+				</columns>
+			</Table> 
+			<core:HTML content='&lt;canvas id=&quot;canvas&quot;&gt;&lt;/canvas&gt;'></core:HTML>
+</ScrollContainer>
+
+		</content>
+		<footer>
+        <Bar >
+          <contentRight>
+              
+          </contentRight>
+           
+            <contentLeft>
+          
+ 
+            
+          </contentLeft>
+        </Bar>
+      </footer>
+	</Page>
+</mvc:View>

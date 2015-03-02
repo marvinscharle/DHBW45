@@ -1,0 +1,83 @@
+{
+  "person": [
+    {
+      "PERNR": "1000",
+      "NAME": "Mustermann",
+      "VNAME": "Max"
+    },
+     {
+      "PERNR": "1001",
+      "NAME": "Testerle",
+      "VNAME": "Paul"
+    },
+     {
+      "PERNR": "1002",
+      "NAME": "Test",
+      "VNAME": "Stefan"
+    },
+    {
+      "PERNR": "1003",
+      "NAME": "Becker",
+      "VNAME": "Heinz"
+    },
+    {
+      "PERNR": "1004",
+      "NAME": "Müller",
+      "VNAME": "Karl"
+    },
+    {
+      "PERNR": "1005",
+      "NAME": "Atem",
+      "VNAME": "Tom"
+    },
+    {
+      "PERNR": "1006",
+      "NAME": "Duck",
+      "VNAME": "Donald"
+    }
+  ],
+  
+  "auftrag": [
+    {
+      "NR": "123",
+      "PRIO": "1",
+      "AART": "KA",
+      "KTEXT": "Kundenauftrag",
+      "TERMIN": "11.11.2015",
+      "STATUS": "Versand",
+      "TPLATZ": "1234",
+      "DAUER": 1
+    },
+     {
+      "NR": "456",
+      "PRIO": "2",
+      "AART": "KA",
+      "KTEXT": "Kundenauftrag",
+      "TERMIN": "11.11.2015",
+      "STATUS": "Verpackung",
+      "TPLATZ": "1234",
+      "DAUER": 2
+    },
+    {
+      "NR": "789",
+      "PRIO": "3",
+      "AART": "MA",
+      "KTEXT": "Messauftrag",
+      "TERMIN": "11.11.2015",
+      "STATUS": "Wartet",
+      "TPLATZ": "1234",
+      "DAUER": 3
+    },
+    {
+      "NR": "852",
+      "PRIO": "1",
+      "AART": "KA",
+      "KTEXT": "Kundenauftrag",
+      "TERMIN": "11.11.2015",
+      "STATUS": "Versand",
+      "TPLATZ": "1234",
+      "DAUER": 4
+    }
+    
+  ]    
+}

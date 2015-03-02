@@ -1,0 +1,28 @@
+
+<core:View xmlns:core="sap.ui.core" xmlns="sap.m"
+	xmlns:shellfooter="sap.ushell.ui.footerbar" controllerName="DHBW.view.Master">
+	
+	<Page id="page" title="Personen">
+		
+		<content>
+		<!-- 
+			TODO: "items"-Wert muss auf Collection gemappt werden sowie Mapping Felder von OData Service zu angezeigte Felder
+		 -->
+			<List id="list" items="{/PersonSet}" mode="{device>/listMode}"
+				select="handleSelect" growing="true" growingScrollToLoad="true" inset='false'>
+				<ObjectListItem id="MAIN_LIST_ITEM" type="{device>/listItemType}"
+					title="{Nname}" number="{Pernr}">
+					
+				</ObjectListItem>
+			</List>
+		</content>		
+		<footer>
+			<Bar>
+				<contentLeft>
+					<shellfooter:SettingsButton></shellfooter:SettingsButton>
+				</contentLeft>
+			</Bar>
+		</footer>
+	</Page>
+	
+</core:View>

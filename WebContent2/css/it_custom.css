@@ -1,0 +1,190 @@
+#box_delete {
+	background-color: red;
+	position: absolute;
+	width: 300px;
+	height: 300px;
+	bottom: 0px;
+	right: -150px;
+	text-align: center;
+	border-radius: 150px;
+	visibility: hidden;
+	opacity: 0.4;
+	filter: alpha(opacity = 40);
+}
+.but1{
+	
+	
+	 color : green;  
+          activeColor : white;  
+          activeBackgroundColor : green;  
+          hoverColor : green;  
+          hoverBackgroundColor : green;  
+}
+#box_assign {
+	background-color: green;
+	position: absolute;
+	width: 300px;
+	height: 300px;
+	bottom: 0px;
+	left: -150px;
+	text-align: center;
+	border-radius: 150px;
+	visibility: hidden;
+	opacity: 0.4;
+	filter: alpha(opacity = 40);
+}
+
+
+.back {
+	
+	background-image: url('../pictures/background.jpg');
+	background-repeat: no-repeat;
+}
+
+.entry_input {
+	display: inline-block;
+	/* enable squares to appear next to each other within one line */
+	padding: 8px;
+	width: 600px;
+	height: 80px;
+	border-radius: 20px;
+	text-align: center;
+	-moz-box-sizing: border-box;
+	/* consider padding+border part of the width/height */
+	box-sizing: border-box;
+	cursor: move;
+	border: 1px solid rgba(81, 203, 238, 1);
+	box-shadow: 0 0 5px rgba(81, 203, 238, 1);
+	outline: none !important;
+}
+
+.Mat{
+	
+		font-size: 6vw;
+	 margin-left: auto;
+    margin-right: auto;
+	width: 100vw;
+}
+
+
+
+.input_bg {
+	display: inline-block;
+	/* enable squares to appear next to each other within one line */
+	padding: 8px;
+	width: 600px;
+	height: 80px;
+	border-radius: 20px;
+	text-align: center;
+	-moz-box-sizing: border-box;
+	/* consider padding+border part of the width/height */
+	box-sizing: border-box;
+	cursor: move;
+	border: 1px solid rgba(81, 203, 238, 1);
+	box-shadow: 0 0 5px rgba(81, 203, 238, 1);
+	outline: none !important;
+}
+
+.mySquare {
+	/* style the CSS class that has been written by the renderer method */
+	display: inline-block;
+	/* enable squares to appear next to each other within one line */
+	padding: 8px;
+	width: 300px;
+	height: 300px;
+	border-radius: 150px;
+	text-align: center;
+	-moz-box-sizing: border-box;
+	/* consider padding+border part of the width/height */
+	box-sizing: border-box;
+	cursor: move;
+	border: 1px solid rgba(81, 203, 238, 1);
+	box-shadow: 0 0 5px rgba(81, 203, 238, 1);
+	outline: none !important;
+}
+
+.pop{
+	
+	font-size: large;
+}
+.message {
+	/* style the CSS class that has been written by the renderer method */
+	display: inline-block;
+	/* enable squares to appear next to each other within one line */
+	padding: 8px;
+	width: 600px;
+	height: 80px;
+	text-align: center;
+	-moz-box-sizing: border-box;
+	/* consider padding+border part of the width/height */
+	box-sizing: border-box;
+	outline: none !important;
+	background-color: white;
+	color: black;
+	font-size: xx-large;
+	margin-top: 20%;
+	border-radius: 20px;
+	
+}
+
+.hidden{
+	visibility: hidden;	
+}
+
+.visible{
+	visibility: visible;	
+}
+
+
+.red {
+	background-color: red;
+	color: red;
+	background-image: url('../pictures/gehen.png');
+	background-repeat: no-repeat;
+	margin-left: 10%;
+	margin-top: 20%;
+	background-size: 300px 300px;
+}
+
+.green {
+	background-color: green;
+	color: green;
+	background-image: url('../pictures/kommen.png');
+	background-repeat: no-repeat;
+	margin-right: 10%;	
+	margin-top: 20%;
+	background-size: 300px 300px;
+}
+
+.gray {
+	background-color: white;
+	color: black;
+	font-size: xx-large;
+	/*margin-top: 20%;*/
+}
+
+.text1 {
+	font-size: 6vw;
+	 margin-left: auto;
+    margin-right: auto;
+    
+	
+}
+
+.Bild img { margin-left: auto;
+    margin-right: auto;
+    display: block;
+    vertical-align: middle;}
+
+.opacity {
+	opacity: 0.8; /* modern browser */
+	-moz-opacity: 0.8; /* older Mozilla browser */
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
+	/* IE8 in Standard Compliant Mode */
+	filter: alpha(opacity = 80); /* IE5.x -7.0 */
+}
+
+.myBackgroundStyle {
+	background-image: url('/pictures/background.jpg');
+	background-repeat: no-repeat;
+}
