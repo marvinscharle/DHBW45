@@ -6,6 +6,7 @@ $.sap.require('sap.ui.thirdparty.jqueryui.jquery-ui-resizable');
 $.sap.require('sap.ui.thirdparty.jqueryui.jquery-ui-draggable');
 $.sap.require('sap.ui.thirdparty.jqueryui.jquery-ui-droppable');
 
+$.sap.require('DHBW.script.CalendarObject');
 $.sap.require('DHBW.script.jquery-touch-punch');
 $.sap.require('DHBW.script.moment');
 $.sap.require('DHBW.script.FileSaver');
@@ -159,12 +160,58 @@ sap.ui.controller("DHBW.view.Detail", {
                 window.filter = true;
             }
 
+
+
+
             //Sind im context der Tabelle
             var items = this.getItems();
             var events = $('#calendar').fullCalendar( 'clientEvents');
+
+            CalendarObject.resetObjectStore();
+            // Objekte aufbauen
+            for (var i = 0; i < items.length; i++) {
+                var start = Date.parse(this.getItems()[i].getCells()[8].getText());
+                if (isNaN(start) == false) {
+                    start = new Date(start);
+                    var suzeit = new Date(this.getItems()[i].getCells()[10].getText());
+                    start.setMinutes(suzeit.getMinutes());
+                    start.setHours(suzeit.getHours());
+                } else {
+                    start = null;
+                }
+
+                var end = Date.parse(this.getItems()[i].getCells()[9].getText());
+                if (isNaN(end) == false) {
+                    end = new Date(end);
+                    var euzeit = new Date(this.getItems()[i].getCells()[11].getText());
+                    end.setMinutes(euzeit.getMinutes());
+                    end.setHours(euzeit.getHours());
+                }
+
+                var object = CalendarObject.init({
+                    start: start,
+                    end: end,
+                    row: this.getItems()[i],
+                    duration: parseFloat(this.getItems()[i].getCells()[7].getText()),
+                    id: parseInt(this.getItems()[i].getCells()[0].getText())
+                });
+
+                // Kalender-Event suchen
+                for (var e = 0; e < events.length; e++) {
+                    if (parseInt(events[e].title) == object.id) {
+                        object.assignCalendarEvent(events[e]);
+                        break;
+                    }
+                }
+
+                // Falls nicht vorhanden: Kalender-Event erstellen
+                object.addCalendarEvent();
+            }
+
+
             var da = false;
             for (var index = 0; index < items.length; index++) {
-
+                /**
                 if(this.getItems()[index].getCells()[8].getText() != ""){
                     for(var z = 0; z < events.length; z++){
                         if(events[z].title == this.getItems()[index].getCells()[0].getText()){
@@ -197,35 +244,8 @@ sap.ui.controller("DHBW.view.Detail", {
                         da = false;
                     }
                 }
+**/
 
-                var element = items[index];
-                (function (element) {
-                    element.addEventDelegate({
-                        onmousedown: function () {
-                            mouseState = setTimeout(
-                                function () {
-                                    $("#" + element.sId).draggable({
-                                        appendTo: 'body',
-                                        helper: 'clone',
-                                        cursor: 'move',
-                                        revert: 'invalid',
-                                        start: function (event, ui) {
-                                            ui.helper.width($("#" + element.sId).width());
-                                            $("#box_assign").css("visibility", "visible");
-                                            $("#box_delete").css("visibility", "visible");
-                                        },
-                                        stop: function () {
-                                            element.removeStyleClass("sapMLIBSelected");
-                                            $("#box_assign").css("visibility", "hidden");
-                                            $("#box_delete").css("visibility", "hidden");
-                                        }
-                                    });
-                                    element.addStyleClass("sapMLIBSelected");
-                                }, 600
-                            );
-                        }
-                    });
-                })(element);
             }
 
         });
@@ -314,11 +334,21 @@ sap.ui.controller("DHBW.view.Detail", {
                 },
                 eventDrop: function (event) {
                     //Drop von Events ins Backend schreiben
+                    if (!CalendarObject.exists(event.title)) return;
 
                     var start = event.start.toDate();
                     var end = event.end.toDate();
 
-                    var dateObject = getFormattedDateObject(start,end);
+                    var object = CalendarObject.get(event.title);
+                    object.updateDate(start,end);
+                    object.save({
+                        personal_number: window.id,
+                        success: function() { console.log("Success"); },
+                        failure: function() { console.log("Failure"); }
+                    });
+
+
+                    /*var dateObject = getFormattedDateObject(start,end);
 
                     var sap_data ={
                         Aufnr: event.title,
@@ -343,10 +373,25 @@ sap.ui.controller("DHBW.view.Detail", {
                         failure: function () {
                             console.log("Failure 2");
                         }
-                    });
+                    });*/
                 },
                 eventResize: function (event) {
                     //Events größer / kleiner ziehen
+                    if (!CalendarObject.exists(event.title)) return;
+
+                    var start = event.start.toDate();
+                    var end = event.end.toDate();
+
+                    var object = CalendarObject.get(event.title);
+                    object.updateDate(start,end);
+                    object.save({
+                        personal_number: window.id,
+                        success: function() { console.log("Success"); },
+                        failure: function() { console.log("Failure"); }
+                    });
+
+                    /**
+
                     console.log ("Event resize");
                     var start = event.start.toDate();
                     var end = event.end.toDate();
@@ -377,31 +422,46 @@ sap.ui.controller("DHBW.view.Detail", {
                             console.log("Failure 2");
                         }
                     });
-
+                    */
                 },
                 drop: function (e, f) {
                     //drop von Listenelementen
-                    var tableline = f.target.getElementsByTagName("span");
+                    /*
                     var eventname =tableline.item(0).innerText + " " + tableline.item(2).innerText;
-                    var dauer = parseInt(tableline.item(7).innerText);
+                    var dauer = parseInt(tableline.item(7).innerText);*/
 
+                    var tableline = f.target.getElementsByTagName("span");
+                    var event_id = tableline.item(0).innerText;
+
+                    if (!CalendarObject.exists(event_id)) return;
+                    var object = CalendarObject.get(event_id);
 
                     var start = new Date();
                     start.setMonth(e.month());
                     start.setDate(e.date());
                     start.setFullYear(e.year());
-                    start.setUTCHours((e.hours()));
-                    var hilf = start.getUTCHours() -1;
-                    start.setUTCHours(hilf);
+                    start.setHours((e.hours()));
                     start.setMinutes(e.minutes());
 
                     var end = new Date();
                     end.setMonth(e.month());
                     end.setDate(e.date());
                     end.setFullYear(e.year());
-                    end.setUTCHours((e.hours()) + (dauer - 1) );
+                    end.setHours((e.hours()) + (object.duration) );
                     end.setMinutes(e.minutes());
 
+                    object.create({
+                        personal_number: window.id,
+                        start: start,
+                        end: end,
+                        success: function() { console.log("Success"); },
+                        failure: function() { console.log("Failure"); }
+                    });
+
+
+                    object.addCalendarEvent(null,1);
+
+/*
                     var tableline = f.target.getElementsByTagName("span");
                     var eventname =tableline.item(0).innerText;
 
@@ -454,7 +514,7 @@ sap.ui.controller("DHBW.view.Detail", {
                         failure: function () {
                             console.log("Failure 2");
                         }
-                    });
+                    });*/
 
                 },
 
