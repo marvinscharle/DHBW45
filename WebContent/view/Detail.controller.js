@@ -24,44 +24,37 @@ $.sap.require('DHBW.script.html2canvas');
 // @table_item_4_text - Termindatum (Date)
 //
 function getFormattedDateObject (start, end, table_item_4_text) {
-<<<<<<< HEAD
     //Startdatum "bauen", zuerst im "SAP"-Format
     var zeit = "PT"+("00"+start.getHours()).slice(-2)+"H"+("00"+start.getMinutes()).slice(-2)+"M"+("00"+start.getSeconds()).slice(-2)+"S";
     //Jetzt aus GMT, welcher jedoch modifiziert werden muss
-=======
-    var zeit = "PT"+("00"+(start.getHours()-2)).slice(-2)+"H"+("00"+start.getMinutes()).slice(-2)+"M"+("00"+start.getSeconds()).slice(-2)+"S";
->>>>>>> origin/master
+
     var start_of_start_day = new Date(start.getTime());
     start_of_start_day.setHours(0,0,0,0);
     start_of_start_day.setDate(start_of_start_day.getDate()+1);
     var tag = start_of_start_day.toISOString().substring(0, start_of_start_day.toISOString().length-5);
 
-<<<<<<< HEAD
     //Enddatum
     var zeit2 = "PT"+("00"+end.getHours()).slice(-2)+"H"+("00"+end.getMinutes()).slice(-2)+"M"+("00"+end.getSeconds()).slice(-2)+"S";
     //Jetzt aus GMT, welcher jedoch modifiziert werden muss
-=======
 
-    var zeit2 = "PT"+("00"+(end.getHours()-2)).slice(-2)+"H"+("00"+end.getMinutes()).slice(-2)+"M"+("00"+end.getSeconds()).slice(-2)+"S";
->>>>>>> origin/master
+
     var start_of_end_day = new Date(end.getTime());
     start_of_end_day.setHours(0,0,0,0);
     start_of_end_day.setDate(start_of_end_day.getDate()+1);
     var tag2 = start_of_end_day.toISOString().substring(0, start_of_end_day.toISOString().length-5);
 
-<<<<<<< HEAD
     //Drittes Datum für SAP (Erforderlich von Schnittstelle)
     var t_item_4 = new Date(table_item_4_text);
     t_item_4.setHours(0,0,0,0);
     var tag3 = t_item_4.toISOString().substring(0, t_item_4.toISOString().length-5);
-=======
+
     if (typeof table_item_4_text != 'undefined') {
         var t_item_4 = new Date(table_item_4_text);
         t_item_4.setHours(0,0,0,0);
         t_item_4.setDate(t_item_4.getDate()+1);
         var tag3 = t_item_4.toISOString().substring(0, t_item_4.toISOString().length-5);
     }
->>>>>>> origin/master
+
 
     //Rückgabeobjekt, passend für SAP
     return {
