@@ -188,3 +188,46 @@
 	background-image: url('/pictures/background.jpg');
 	background-repeat: no-repeat;
 }
+/* Kalender Formatierung */
+.fc-state-default {
+    height: 2.500rem !important;
+    min-width: 2.500rem;
+    margin: 0;
+    padding: 0;
+    vertical-align: top;
+    border: 1px solid #bfbfbf;
+    border-radius: 0.125rem;
+    color: #333333;
+    text-shadow: 0 1px 0 #ffffff;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.875rem;
+    background-color: #f7f7f7;
+    background-image: linear-gradient(top, #f7f7f7 0, #f2f2f2 100%) !important;
+    background-image: -webkit-linear-gradient(top, #f7f7f7 0, #f2f2f2 100%) !important;
+    box-shadow: none !important;
+}
+.fc-state-hover {
+    background-color: #ececec !important;
+    background-position:0 0 !important;
+    background-image:none !important;
+}
+.fc-toolbar {
+    margin: .5em
+}
+
+.fc-state-active {
+    background-image: none !important;
+    background-color: #007cc0 !important;
+    border-color: #007cc0!important;
+    color: #fff !important;
+    text-shadow: none !important;
+}
+
+.fc-state-default:focus {
+    outline: 1px dotted #005483 !important;
+}
+
+.fc-center h2 {
+    font-weight: 400;
+    padding-top: 7px;
+}
