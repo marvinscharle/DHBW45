@@ -37,20 +37,19 @@ sap.ui.core.mvc.Controller.extend("DHBW.view.Master", {
 	
 	//Suche
 	
-	handleSearch: function() {
-		/**
-		 * TODO: Anpassen des Filters für die Suche
-		 */
-		var filters = [];
-		var searchString = this.getView().byId("searchField").getValue();
-		if (searchString && searchString.length > 0) {
-			filters = [new sap.ui.model.Filter("Suche", sap.ui.model.FilterOperator.Contains, searchString)];
+	handleSearch: function(oEvt) {
+
+		var aFilters = [];
+		var sQuery = oEvt.getSource().getValue();
+		if (sQuery && sQuery.length > 0) {
+			var filter = new sap.ui.model.Filter("Nname", sap.ui.model.FilterOperator.Contains, sQuery);
+			aFilters.push(filter);
 		}
 		
 		// update list binding
 		var list = this.getView().byId("list");
 		var binding = list.getBinding("items");
-		binding.filter(filters);
+		binding.filter(aFilters, "Application");
 	},
 	
 	handleSelect: function(oEvent) {

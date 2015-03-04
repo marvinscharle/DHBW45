@@ -68,8 +68,6 @@ function putAuftragsSet (o) {
 
     var record = '<atom:entry xmlns:atom="http://www.w3.org/2005/Atom">'+
         '<atom:id>tag:com.sap,2010-06-24:/subscriptions/123</atom:id>'+
-        '<atom:title>Create new user</atom:title><atom:author/>'+
-        '<atom:updated/>'+
         '<atom:content type="application/xml">'+
         '<m:properties xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices">'+
         '<d:Aufnr m:type="Edm.String">' + data.Aufnr + '</d:Aufnr>'+
@@ -95,6 +93,24 @@ function putAuftragsSet (o) {
     }).fail(function(d){
         failure(d);
     });
+}
+
+/**
+ * Zeigt die Warnung für ein außerhalb der Geschäftszeiten liegendes Ereignis an
+ * @param object {object}
+ */
+function showBusinessHoursWarning(object) {
+    sap.m.MessageBox.show("Der Kalendereintrag befindet sich außerhalb der Geschäftszeiten.",
+        sap.m.MessageBox.Icon.WARNING, "Hinweis",
+        [ sap.m.MessageBox.Action.OK, sap.m.MessageBox.Action.DELETE ], $.proxy(function(sAction) {
+            if (sAction == 'DELETE') {
+                object.removeCalendarEvent({
+                    successful: function () { console.log('Successful'); },
+                    failure: function () { console.log('Failure'); }
+                });
+            }
+        }, this)
+    );
 }
 
 sap.ui.controller("DHBW.view.Detail", {
@@ -251,35 +267,16 @@ sap.ui.controller("DHBW.view.Detail", {
                             function(sAction) {
                                 if ("YES" === sAction) {
 
+                                    if (!CalendarObject.exists(event.title)) return;
 
-                                    var id= event._id;
-                                    model = window.view.getModel();
-                                    model.remove(  "/AuftragSet('" + event.title +"')", "", function(e,f){
-                                            console.log("Erfolg");
-                                        },function(e,f){
-                                            console.log("Fail");
-                                        }
-                                    );
-                                    var tab = window.view.byId("idTable");
-                                    var items = tab.getItems();
-
-                                    for(var index = 0; index < items.length; index++){
-                                        if (tab.getItems()[index].getCells()[0].getText() == id){
-                                            tab.getItems()[index].getCells()[0].setVisible(true);
-                                        }
-                                    }
-                                    $('#calendar').fullCalendar('removeEvents', id);
+                                    CalendarObject.get(event.title).removeCalendarEvent({
+                                        successful: function () { console.log('Successful'); },
+                                        failure: function () { console.log('Failure'); }
+                                    });
                                 }
                             }, this));
                 },
-                businessHours: {
-                    start: '10:00', // a start time (10am in this example)
-                    end: '18:00', // an end time (6pm in this example)
-
-                    dow: [1, 2, 3, 4, 5]
-                    // days of week. an array of zero-based day of week integers (0=Sunday)
-                    // (Monday-Thursday in this example)
-                },
+                businessHours: CalendarObject.businessHours,
                 eventDrop: function (event) {
                     //Drop von Events ins Backend schreiben
                     if (!CalendarObject.exists(event.title)) return;
@@ -346,6 +343,11 @@ sap.ui.controller("DHBW.view.Detail", {
 
                     object.addCalendarEvent(null,1);
 
+                    // Warnung zeigen, falls nicht in Geschäftszeiten
+                    if (!CalendarObject.isInBusinessHours(object.start, object.end)) {
+                        showBusinessHoursWarning(object);
+                    }
+
                 },
 
                 select: function (start, end) {
@@ -357,6 +359,48 @@ sap.ui.controller("DHBW.view.Detail", {
         );
 
 
+    },
+
+    image: function(){
+
+        html2canvas($('#calendar'), {
+            onrendered: function(canvas) {
+                window.open(canvas.toDataURL());
+            }
+        });
+    },
+
+    ics: function(){
+        var ical = ics();
+
+        var events = $('#calendar').fullCalendar( 'clientEvents');
+
+        for(var i = 0; i < events.length; i++){
+            var object = CalendarObject.get(events[i].title);
+            if (object == null) continue;
+
+            ical.addEvent(object.id, "", "", object.start, object.end);
+
+        }
+        ical.download("wp");
+    },
+
+    toggleTable:function(){
+        // Wenn die Tabelle eingeblendet ist
+        if(this.getView().byId("idTable").getVisible()){
+            //Tabelle ausblenden
+            this.getView().byId("idTable").setVisible(false);
+
+            //Kalenderhöhe neu berechnen
+            $('#calendar').fullCalendar('option', 'height', $(window).height());
+            this.getView().byId("toggleTable").setText("Tabelle einblenden");
+
+        } else {
+            // Tabelle als sichtbar markieren
+            this.getView().byId("idTable").setVisible(true);
+            $('#calendar').fullCalendar('option', 'height', ($(window).height()*0.58));
+            this.getView().byId("toggleTable").setText("Tabelle ausblenden");
+        }
     },
 
 

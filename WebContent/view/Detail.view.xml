@@ -98,7 +98,27 @@
 		<footer>
         <Bar >
           <contentRight>
-              
+
+			  <Button
+
+					  id="toggleTable"
+					  text="Tabelle ausblenden"
+					  icon="sap-icon://table-view"
+					  press="toggleTable" />
+			  <Button
+
+					  id="image"
+					  text="Als Bild speichern"
+					  icon="sap-icon://download"
+					  press="image" />
+
+			  <Button
+
+					  id="ics"
+					  text="Als ICS speichern"
+					  icon="sap-icon://calendar"
+					  press="ics" />
+
           </contentRight>
            
             <contentLeft>

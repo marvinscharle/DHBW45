@@ -135,14 +135,25 @@ CalendarObject.prototype = {
 
     /**
      * Entfernt den Termin aus dem Kalender
-     * @returns {CalendarObject}
+     * @param o {object}
      */
-    removeCalendarEvent: function () {
-        if (this.calendar_item == null) return;
+    removeCalendarEvent: function (o) {
+        var o = (o||{});
+        var successful = (o.successful||function(){});
+        var failure = (o.failure||function(){});
+
+        if (!this.in_calendar()) return;
+        var _id = this.calendar_item._id;
+        $('#calendar').fullCalendar('removeEvents', _id);
         this.calendar_item = null;
         this.row.setVisible(true);
 
-        return this;
+        window.view.getModel().remove(  "/AuftragSet('" + this.id +"')", "", function(e,f){
+                successful();
+            },function(e,f){
+                failure();
+            }
+        );
     },
 
     /**
@@ -307,4 +318,28 @@ CalendarObject.exists = function (id) {
 CalendarObject.get = function (id) {
     var id = parseInt(id);
     return CalendarObject.objectStore[id];
+};
+CalendarObject.businessHours = {
+    start: '10:00',
+    end: '18:00',
+    dow: [1, 2, 3, 4, 5]
+};
+/**
+ * Gibt true zurück, wenn der Zeitbereich in den Geschäftszeiten liegt
+ * @param start
+ * @param end
+ * @returns {boolean}
+ */
+CalendarObject.isInBusinessHours = function (start, end) {
+    var allowed_start = CalendarObject.businessHours.start.split(':');
+    var allowed_end = CalendarObject.businessHours.end.split(':');
+
+    // Überprüfen, ob Startuhrzeit vor erlaubter Startuhrzeit liegt
+    if (parseInt(allowed_start[0]) > start.getHours() || (parseInt(allowed_start[0]) == start.getHours() && parseInt(allowed_start[1]) > start.getMinutes())) return false;
+
+    // Überprüfen, ob Enduhrzeit nach erlaubter Enduhrzeit liegt
+    if (parseInt(allowed_end[0]) < end.getHours() || (parseInt(allowed_end[0]) == end.getHours() && parseInt(allowed_end[1]) < end.getMinutes())) return false;
+
+    // Überprüfen, ob der Wochentag erlaubt ist
+    return !($.inArray(start.getDay(), CalendarObject.businessHours.dow) == -1 || $.inArray(end.getDay(), CalendarObject.businessHours.dow) == -1);
 };

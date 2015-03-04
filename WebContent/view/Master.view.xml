@@ -1,5 +1,5 @@
 
-<core:View xmlns:core="sap.ui.core" xmlns="sap.m"
+<core:View xmlns:core="sap.ui.core" xmlns="sap.m" xmlns:l="sap.ui.layout"
 	xmlns:shellfooter="sap.ushell.ui.footerbar" controllerName="DHBW.view.Master">
 	
 	<Page id="page" title="Personen">
@@ -8,6 +8,11 @@
 		<!-- 
 			TODO: "items"-Wert muss auf Collection gemappt werden sowie Mapping Felder von OData Service zu angezeigte Felder
 		 -->
+				<Toolbar>
+					<SearchField id="searchField"
+							liveChange="handleSearch"
+							width="100%" />
+				</Toolbar>
 			<List id="list" items="{/PersonSet}" mode="{device>/listMode}"
 				select="handleSelect" growing="true" growingScrollToLoad="true" inset='false'>
 				<ObjectListItem id="MAIN_LIST_ITEM" type="{device>/listItemType}"
