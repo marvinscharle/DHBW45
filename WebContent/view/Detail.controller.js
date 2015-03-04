@@ -68,7 +68,7 @@ function putAuftragsSet (o) {
 
     var record = '<atom:entry xmlns:atom="http://www.w3.org/2005/Atom">'+
         '<atom:id>tag:com.sap,2010-06-24:/subscriptions/123</atom:id>'+
-        '<atom:title>Create new user</atom:title><atom:author/>'+
+        '<atom:title>Create new Order</atom:title><atom:author/>'+
         '<atom:updated/>'+
         '<atom:content type="application/xml">'+
         '<m:properties xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices">'+
