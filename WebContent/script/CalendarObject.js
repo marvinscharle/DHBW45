@@ -218,11 +218,13 @@ CalendarObject.prototype = {
      * @returns {CalendarObject}
      */
     save: function(o) {
+        //Callbacks und Überprüfung 
         var o = (o||{});
         if (o.personal_number == null) return false;
         var success = (o.success||function(){});
         var failure = (o.failure||function(){});
 
+        //Payload für SAP vorbereiten.  
         var sap_data = {
             Aufnr: this.id,
             Pernr: o.personal_number,
@@ -231,9 +233,10 @@ CalendarObject.prototype = {
             Edate: this.end_date(),
             Euzeit: this.end_time()
         };
-
+        //Token holen
         getSAPToken({
             successful: function (token) {
+                //Auftrag speichern
                 putAuftragsSet({
                     successful: function() {
                         success();
