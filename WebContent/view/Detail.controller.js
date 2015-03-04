@@ -16,61 +16,10 @@ $.sap.require('DHBW.script.fullcalendar');
 $.sap.require('DHBW.script.html2canvas');
 
 
-// Formatiert Datum für SAP entsprechend. Gibt ein Objektiv passend für Schnittstelle zurück
-// 
-// Parameter:
-// @start - Startdatum (Date)
-// @end - Enddatum (Date)
-// @table_item_4_text - Termindatum (Date)
-//
-function getFormattedDateObject (start, end, table_item_4_text) {
-    //Startdatum "bauen", zuerst im "SAP"-Format
-    var zeit = "PT"+("00"+start.getHours()).slice(-2)+"H"+("00"+start.getMinutes()).slice(-2)+"M"+("00"+start.getSeconds()).slice(-2)+"S";
-    //Jetzt aus GMT, welcher jedoch modifiziert werden muss
-
-    var start_of_start_day = new Date(start.getTime());
-    start_of_start_day.setHours(0,0,0,0);
-    start_of_start_day.setDate(start_of_start_day.getDate()+1);
-    var tag = start_of_start_day.toISOString().substring(0, start_of_start_day.toISOString().length-5);
-
-    //Enddatum
-    var zeit2 = "PT"+("00"+end.getHours()).slice(-2)+"H"+("00"+end.getMinutes()).slice(-2)+"M"+("00"+end.getSeconds()).slice(-2)+"S";
-    //Jetzt aus GMT, welcher jedoch modifiziert werden muss
-
-
-    var start_of_end_day = new Date(end.getTime());
-    start_of_end_day.setHours(0,0,0,0);
-    start_of_end_day.setDate(start_of_end_day.getDate()+1);
-    var tag2 = start_of_end_day.toISOString().substring(0, start_of_end_day.toISOString().length-5);
-
-    //Drittes Datum für SAP (Erforderlich von Schnittstelle)
-    var t_item_4 = new Date(table_item_4_text);
-    t_item_4.setHours(0,0,0,0);
-    var tag3 = t_item_4.toISOString().substring(0, t_item_4.toISOString().length-5);
-
-    if (typeof table_item_4_text != 'undefined') {
-        var t_item_4 = new Date(table_item_4_text);
-        t_item_4.setHours(0,0,0,0);
-        t_item_4.setDate(t_item_4.getDate()+1);
-        var tag3 = t_item_4.toISOString().substring(0, t_item_4.toISOString().length-5);
-    }
-
-
-    //Rückgabeobjekt, passend für SAP
-    return {
-        Termin: (tag3||null),
-        Sdate: tag,
-        Suzeit: zeit,
-        Edate: tag2,
-        Euzeit: zeit2
-    }
-}
-
-// Holt das Token für Anfragen (Schreiben) auf 
-// 
-// Parameter:
-// @o = Objekt für Parameter
-//
+/**
+ * Erstell einen Token zum Schreiben in das SAP-System und gibt diesen an den successful-Handler zurück
+ * @param o {object}
+ */
 function getSAPToken (o) {
     //Callbacks definieren
     var o = (o||{});
@@ -98,6 +47,10 @@ function getSAPToken (o) {
     });
 }
 
+/**
+ * Sendet die Auftragsdaten an das SAP-System
+ * @param o {object}
+ */
 function putAuftragsSet (o) {
     // Callbacks definieren
     var o = (o||{});
@@ -145,7 +98,6 @@ function putAuftragsSet (o) {
 }
 
 sap.ui.controller("DHBW.view.Detail", {
-
 
     onInit: function () {
 
@@ -242,46 +194,6 @@ sap.ui.controller("DHBW.view.Detail", {
 
                 // Falls nicht vorhanden: Kalender-Event erstellen
                 object.addCalendarEvent();
-            }
-
-
-            var da = false;
-            for (var index = 0; index < items.length; index++) {
-                /**
-                if(this.getItems()[index].getCells()[8].getText() != ""){
-                    for(var z = 0; z < events.length; z++){
-                        if(events[z].title == this.getItems()[index].getCells()[0].getText()){
-                            da = true;
-                        }
-                    }
-
-                    if(da != true){
-                        this.getItems()[index].setVisible(false);
-                        var start = new Date(this.getItems()[index].getCells()[8].getText());
-                        var end = new Date(this.getItems()[index].getCells()[9].getText());
-                        var suzeit = new Date(this.getItems()[index].getCells()[10].getText());
-                        var euzeit = new Date(this.getItems()[index].getCells()[11].getText());
-
-                        start.setMinutes(suzeit.getMinutes());
-                        start.setHours(suzeit.getHours());
-
-                        end.setMinutes(euzeit.getMinutes());
-                        end.setHours(euzeit.getHours());
-
-
-                        var eventData = {
-                            title: this.getItems()[index].getCells()[0].getText(),
-                            start: start,
-                            end: end,
-                            color: "green"
-                        };
-
-                        $('#calendar').fullCalendar('renderEvent', eventData, true);
-                        da = false;
-                    }
-                }
-**/
-
             }
 
         });
@@ -383,33 +295,6 @@ sap.ui.controller("DHBW.view.Detail", {
                         failure: function() { console.log("Failure"); }
                     });
 
-
-                    /*var dateObject = getFormattedDateObject(start,end);
-
-                    var sap_data ={
-                        Aufnr: event.title,
-                        Pernr: window.id
-                    };
-
-                    $.extend(sap_data, dateObject);
-
-                    getSAPToken({
-                        successful: function (token) {
-                            putAuftragsSet({
-                                successful: function() {
-                                    console.log("Success");
-                                },
-                                failure: function() {
-                                    console.log("Failure");
-                                },
-                                token: token,
-                                data: sap_data
-                            })
-                        },
-                        failure: function () {
-                            console.log("Failure 2");
-                        }
-                    });*/
                 },
                 eventResize: function (event) {
                     //Events größer / kleiner ziehen
@@ -426,45 +311,10 @@ sap.ui.controller("DHBW.view.Detail", {
                         failure: function() { console.log("Failure"); }
                     });
 
-                    /**
-
-                    console.log ("Event resize");
-                    var start = event.start.toDate();
-                    var end = event.end.toDate();
-
-                    var dateObject = getFormattedDateObject(start,end);
-
-                    var sap_data ={
-                        Aufnr: event.title,
-                        Pernr: window.id
-                    };
-
-                    $.extend(sap_data, dateObject);
-
-                    getSAPToken({
-                        successful: function (token) {
-                            putAuftragsSet({
-                                successful: function() {
-                                    console.log("Success");
-                                },
-                                failure: function() {
-                                    console.log("Failure");
-                                },
-                                token: token,
-                                data: sap_data
-                            })
-                        },
-                        failure: function () {
-                            console.log("Failure 2");
-                        }
-                    });
-                    */
                 },
                 drop: function (e, f) {
                     //drop von Listenelementen
-                    /*
-                    var eventname =tableline.item(0).innerText + " " + tableline.item(2).innerText;
-                    var dauer = parseInt(tableline.item(7).innerText);*/
+
 
                     var tableline = f.target.getElementsByTagName("span");
                     var event_id = tableline.item(0).innerText;
@@ -494,63 +344,7 @@ sap.ui.controller("DHBW.view.Detail", {
                         failure: function() { console.log("Failure"); }
                     });
 
-
                     object.addCalendarEvent(null,1);
-
-/*
-                    var tableline = f.target.getElementsByTagName("span");
-                    var eventname =tableline.item(0).innerText;
-
-                    var eventData = {
-                        title: eventname,
-                        start: start,
-                        end: end
-                    };
-
-                    //
-                    // is the "remove after drop" checkbox checked?
-                    if ($('#drop-remove').is(':checked')) {
-                        // if so, remove the element from the "Draggable Events" list
-                        $(this).remove();
-                    }
-                    //ODATA aktualisieren
-
-                    var dateObject = getFormattedDateObject(start,end,tableline.item(4).innerText);
-
-                    var sap_data ={
-                        Aufnr: tableline.item(0).innerText,
-                        Dauer: tableline.item(7).innerText,
-                        Pernr: window.id,
-                        Prio: tableline.item(2).innerText,
-                        Ktext: tableline.item(3).innerText,
-                        Status: tableline.item(5).innerText,
-                        Tplatz: tableline.item(6).innerText
-
-                    };
-
-                    $.extend(sap_data, dateObject);
-
-                    console.log(sap_data);
-
-                    $('#calendar').fullCalendar('renderEvent', eventData, true);
-
-                    getSAPToken({
-                        successful: function (token) {
-                            putAuftragsSet({
-                                successful: function() {
-                                    console.log("Success");
-                                },
-                                failure: function() {
-                                    console.log("Failure");
-                                },
-                                token: token,
-                                data: sap_data
-                            })
-                        },
-                        failure: function () {
-                            console.log("Failure 2");
-                        }
-                    });*/
 
                 },
 

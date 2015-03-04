@@ -1,10 +1,25 @@
+/**
+ * Objekt zur Repräsentation eines Auftrags. Dieser kann entweder als Tabellenzeile oder als Eintrag im Kalender existieren.
+ * @returns {CalendarObject}
+ * @constructor
+ */
 var CalendarObject = function () {
     var self = this;
 
+    /**
+     * Gibt ein Zeitobjekt in einer SAP-Zeit-kompatiblen Darstellung zurück
+     * @param object
+     * @returns {string}
+     */
     this.time = function(object) {
         return "PT"+("00"+(object.getHours())).slice(-2)+"H"+("00"+object.getMinutes()).slice(-2)+"M"+("00"+object.getSeconds()).slice(-2)+"S";
     };
 
+    /**
+     * Gibt eine Zeitobjekt in einer SAP-Datum-kompatiblen Darstellung zurück
+     * @param object
+     * @returns {string}
+     */
     this.date = function(object) {
         var start_day = new Date(object.getTime());
         start_day.setHours(0,0,0,0);
@@ -22,6 +37,10 @@ CalendarObject.prototype = {
     row: null,
     calendar_item: null,
 
+    /**
+     * Gibt die Startzeit als SAP-Zeit zurück
+     * @returns {string}
+     */
     start_time: function () {
         if (this.start == null) return null;
         //Fixing SAP
@@ -30,6 +49,10 @@ CalendarObject.prototype = {
         return this.time(start);
     },
 
+    /**
+     * Gibt die Endzeit als SAP-Zeit zurück
+     * @returns {string}
+     */
     end_time: function () {
         if (this.end == null) return null;
         //Fixing SAP
@@ -38,20 +61,38 @@ CalendarObject.prototype = {
         return this.time(end);
     },
 
+    /**
+     * Gibt die Startzeit als SAP-Datum zurück
+     * @returns {string}
+     */
     start_date: function () {
         if (this.start == null) return null;
         return this.date(this.start);
     },
 
+    /**
+     * Gibt die Endzeit als SAP-Datum zurück
+     * @returns {string}
+     */
     end_date: function () {
         if (this.end == null) return null;
         return this.date(this.end);
     },
 
+    /**
+     * Gibt true zurück, wenn der Termin im Kalender eingetragen ist
+     * @returns {boolean}
+     */
     in_calendar: function() {
         return (this.calendar_item != null);
     },
 
+    /**
+     * Weist dem Termin ein Element im Kalender zu
+     * @param element
+     * @param color
+     * @returns {CalendarObject}
+     */
     assignCalendarEvent: function (element, color) {
         if (this.calendar_item != null) return;
         var color = (color||'green');
@@ -62,6 +103,12 @@ CalendarObject.prototype = {
         return this;
     },
 
+    /**
+     * Erstellt für den Termin ein Kalenderobjekt
+     * @param color
+     * @param time_offset
+     * @returns {CalendarObject}
+     */
     addCalendarEvent: function (color,time_offset) {
         if (this.calendar_item != null) return;
         if (this.start == null || this.end == null) return;
@@ -86,6 +133,10 @@ CalendarObject.prototype = {
         return this;
     },
 
+    /**
+     * Entfernt den Termin aus dem Kalender
+     * @returns {CalendarObject}
+     */
     removeCalendarEvent: function () {
         if (this.calendar_item == null) return;
         this.calendar_item = null;
@@ -94,6 +145,11 @@ CalendarObject.prototype = {
         return this;
     },
 
+    /**
+     * Fügt für den Termin eine Spalte in der Listenansicht hinzu
+     * @param element
+     * @returns {CalendarObject}
+     */
     addRow: function (element) {
         element.addEventDelegate({
             onmousedown: function () {
@@ -124,6 +180,12 @@ CalendarObject.prototype = {
         return this;
     },
 
+    /**
+     * Aktualisiert den Termin mit den angegebenen Zeiteinheiten
+     * @param start {Date}
+     * @param end {Date}
+     * @returns {CalendarObject}
+     */
     updateDate: function (start, end) {
         if (!start instanceof Date ||!end instanceof Date) return;
         if (start.getTime() > end.getTime()) return;
@@ -139,6 +201,11 @@ CalendarObject.prototype = {
         return this;
     },
 
+    /**
+     * Speichert den Termin im SAP-System
+     * @param o {object}
+     * @returns {CalendarObject}
+     */
     save: function(o) {
         var o = (o||{});
         if (o.personal_number == null) return false;
@@ -175,6 +242,11 @@ CalendarObject.prototype = {
         return this;
     },
 
+    /**
+     * Erstellt den Termin im SAP-System
+     * @param o {object}
+     * @returns {CalendarObject}
+     */
     create: function(o) {
         var o = (o||{});
 
@@ -192,6 +264,11 @@ CalendarObject.prototype = {
     }
 };
 CalendarObject.objectStore = [];
+/**
+ * Erstellt ein neues Objekt mit den gegebenen Attributen
+ * @param o {object}
+ * @returns {CalendarObject}
+ */
 CalendarObject.init = function (o) {
     var o = (o||{});
 
@@ -207,13 +284,26 @@ CalendarObject.init = function (o) {
 
     return instance;
 };
+/**
+ * Setzt den Objekt-Cache zurück
+ */
 CalendarObject.resetObjectStore = function () {
     CalendarObject.objectStore = [];
 };
+/**
+ * Gibt true zurück, wenn ein Objekt mit der gegebenen ID existiert
+ * @param id
+ * @returns {boolean}
+ */
 CalendarObject.exists = function (id) {
     var id = parseInt(id);
     return (CalendarObject.objectStore[id] != null);
 };
+/**
+ * Gibt das Objekt mit der gegebenen ID zurück
+ * @param id
+ * @returns {CalendarObject}
+ */
 CalendarObject.get = function (id) {
     var id = parseInt(id);
     return CalendarObject.objectStore[id];
